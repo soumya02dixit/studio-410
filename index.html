@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Studio 410 | Beauty Salon, Fort Wayne</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Tailwind CDN with dark mode enabled -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
   <style>
     :root {
       --pastel-bg: #f8f6f3;
@@ -16,48 +22,55 @@
     .bg-accent { background: var(--pastel-accent);}
     .text-dark { color: var(--pastel-dark);}
     .text-gold { color: var(--soft-gold);}
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    .blink { animation: blink 1s infinite; }
   </style>
 </head>
-<body class="bg-pastel font-serif">
+<body class="bg-pastel dark:bg-black text-dark dark:text-white font-serif transition-colors duration-300">
 
 <!-- Header -->
-<header class="bg-white shadow-sm px-6 py-4">
+<header class="bg-white dark:bg-black shadow-sm px-6 py-4">
   <div class="flex justify-between items-center max-w-6xl mx-auto">
     <!-- Logo -->
-    <div class="text-3xl font-light tracking-wide text-dark">
+    <div class="text-3xl font-light tracking-wide text-dark dark:text-white">
       STUDIO <span class="italic text-gold">410</span>
     </div>
     <!-- Desktop Nav -->
-    <nav class="hidden md:flex space-x-8 text-lg text-dark">
+    <nav class="hidden md:flex space-x-8 text-lg text-dark dark:text-white">
       <a href="#services" class="hover:text-gold">Services</a>
       <a href="#about" class="hover:text-gold">About</a>
       <a href="#contact" class="hover:text-gold">Contact</a>
     </nav>
     <!-- Contact Info (hide on mobile) -->
     <div class="hidden md:flex items-center space-x-4">
-      <span class="text-dark flex items-center">
+      <span class="text-dark dark:text-white flex items-center">
         <svg class="inline w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 5h12M9 3v2m6 2h6v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7h6"/></svg>
         +1 260-444-5363
       </span>
     </div>
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-dark dark:text-white focus:outline-none" aria-label="Toggle dark mode">
+      <span id="theme-toggle-light" class="hidden">🌞</span>
+      <span id="theme-toggle-dark">🌙</span>
+    </button>
     <!-- Hamburger Icon (mobile only) -->
-    <button id="mobile-menu-toggle" class="md:hidden focus:outline-none" aria-label="Open menu">
-      <svg class="w-8 h-8 text-dark" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <button id="mobile-menu-toggle" class="md:hidden focus:outline-none ml-4" aria-label="Open menu">
+      <svg class="w-8 h-8 text-dark dark:text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
     </button>
   </div>
   <!-- Sidebar Mobile Menu -->
-  <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 md:hidden">
+  <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white dark:bg-black shadow-lg z-50 transform translate-x-full transition-transform duration-300 md:hidden">
     <div class="flex flex-col h-full">
-      <button id="mobile-menu-close" class="self-end m-4 text-3xl text-dark focus:outline-none" aria-label="Close menu">&times;</button>
-      <nav class="flex flex-col mt-8 space-y-6 text-lg text-dark font-medium px-8">
+      <button id="mobile-menu-close" class="self-end m-4 text-3xl text-dark dark:text-white focus:outline-none" aria-label="Close menu">&times;</button>
+      <nav class="flex flex-col mt-8 space-y-6 text-lg text-dark dark:text-white font-medium px-8">
         <a href="#services" class="hover:text-gold" onclick="closeMenu()">Services</a>
         <a href="#about" class="hover:text-gold" onclick="closeMenu()">About</a>
         <a href="#contact" class="hover:text-gold" onclick="closeMenu()">Contact</a>
       </nav>
       <div class="mt-auto mb-8 px-8">
-        <span class="text-dark flex items-center text-base">
+        <span class="text-dark dark:text-white flex items-center text-base">
           <svg class="inline w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 5h12M9 3v2m6 2h6v14a2 2 0 01-2 2H5a2 2 0 01-2-2V7h6"/></svg>
           +1 260-444-5363
         </span>
@@ -65,10 +78,10 @@
     </div>
   </div>
   <script>
+    // Mobile menu toggle
     const menu = document.getElementById('mobile-menu');
     const openBtn = document.getElementById('mobile-menu-toggle');
     const closeBtn = document.getElementById('mobile-menu-close');
-
     openBtn.onclick = () => {
       menu.classList.remove('translate-x-full');
       menu.classList.add('translate-x-0');
@@ -85,6 +98,35 @@
         closeMenu();
       }
     });
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.getElementById('html');
+    const lightIcon = document.getElementById('theme-toggle-light');
+    const darkIcon = document.getElementById('theme-toggle-dark');
+    // Set initial state
+    if (localStorage.getItem('theme') === 'dark' ||
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      html.classList.add('dark');
+      lightIcon.classList.remove('hidden');
+      darkIcon.classList.add('hidden');
+    } else {
+      html.classList.remove('dark');
+      lightIcon.classList.add('hidden');
+      darkIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      html.classList.toggle('dark');
+      if (html.classList.contains('dark')) {
+        localStorage.setItem('theme', 'dark');
+        lightIcon.classList.remove('hidden');
+        darkIcon.classList.add('hidden');
+      } else {
+        localStorage.setItem('theme', 'light');
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+      }
+    });
   </script>
 </header>
 
@@ -94,182 +136,202 @@
   <div class="absolute inset-0 flex flex-col justify-center items-center text-center bg-black bg-opacity-30">
     <h1 class="text-5xl font-light text-white mb-2 tracking-wide">Beauty & Creativity</h1>
     <p class="text-xl text-white mb-6">Modern beauty salon & creative studio in Fort Wayne, IN</p>
-    <a href="#contact" class="bg-white text-dark border border-dark px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-gold hover:text-black transition">
+    <a href="#contact" class="bg-white dark:bg-black text-dark dark:text-white border border-dark dark:border-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-gold hover:text-black dark:hover:bg-gold dark:hover:text-black transition">
       Contact Us
+    </a>
+    <a href="#contact" class="blink mt-6 text-3xl md:text-4xl font-extrabold text-gold hover:text-black transition" style="cursor:pointer;">
+      Book now
     </a>
   </div>
 </section>
 
 <!-- Services Section -->
-<section class="max-w-6xl mx-auto py-16 px-4">
-    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
-      Our Signature Services at Studio 410
-    </h2>
-    <div class="grid grid-cols-1 gap-6 
-                md:grid-cols-2 
-                lg:grid-cols-3 lg:grid-rows-2">
-      <!-- Service 1: Tall box on the left -->
-      <div class="relative rounded-2xl shadow-md overflow-hidden lg:row-span-2">
-        <img src="images/pexels-photo-3379933.webp" alt="Photography Services" class="w-full h-64 lg:h-full object-cover"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 flex items-center justify-center">
-          <h3 class="text-2xl font-bold text-white drop-shadow text-center px-2">Photography Services</h3>
-        </div>
-      </div>
-      <!-- Service 2: Top right, left -->
-      <div class="relative rounded-2xl shadow-md overflow-hidden">
-        <img src="images/pexels-photo-13658923.jpeg" alt="Fine Art Photography Online" class="w-full h-64 object-cover"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 flex items-center justify-center">
-          <h3 class="text-xl font-semibold text-white drop-shadow text-center px-2">Fine Art Photography Online</h3>
-        </div>
-      </div>
-      <!-- Service 4: Top right, right -->
-      <div class="relative rounded-2xl shadow-md overflow-hidden">
-        <img src="images/pexels-photo-8418393.jpeg" alt="Creative Wedding Photography" class="w-full h-64 object-cover"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 flex items-center justify-center">
-          <h3 class="text-xl font-semibold text-white drop-shadow text-center px-2">Creative Wedding Photography</h3>
-        </div>
-      </div>
-      <!-- Service 3: Bottom right, left -->
-      <div class="relative rounded-2xl shadow-md overflow-hidden">
-        <img src="images/pexels-photo-3369163.webp" alt="Creative Living Spaces" class="w-full h-64 object-cover"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 flex items-center justify-center">
-          <h3 class="text-xl font-semibold text-white drop-shadow text-center px-2">Creative Living Spaces</h3>
-        </div>
-      </div>
-      <!-- Service 5: Bottom right, right -->
-      <div class="relative rounded-2xl shadow-md overflow-hidden">
-        <img src="images/pexels-photo-8784732.webp" alt="Creative Space for Rent" class="w-full h-64 object-cover"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 flex items-center justify-center">
-          <h3 class="text-xl font-semibold text-white drop-shadow text-center px-2">Creative Space for Rent</h3>
-        </div>
+<section id="services" class="max-w-7xl mx-auto py-16 px-4">
+  <h2 class="text-5xl font-serif font-light mb-12 text-gray-900 dark:text-white tracking-wide">
+    OUR SERVICES
+  </h2>
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-2">
+    <!-- Tall Left Service -->
+    <div class="relative md:row-span-2 rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-900 dark:border dark:border-gray-700 dark:shadow-xl transition">
+      <img src="images/pexels-photo-3379933.webp" alt="Skin Care Services" class="w-full h-72 md:h-full object-cover"/>
+      <div class="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 to-transparent p-6">
+        <span class="text-white text-2xl md:text-3xl font-light font-serif leading-tight drop-shadow">
+          SKIN CARE<br>SERVICES
+        </span>
       </div>
     </div>
-  </section>
-  
-  <!-- About Section (moved here) -->
-  <section id="about" class="max-w-6xl mx-auto px-4 py-16 flex flex-col md:flex-row items-center bg-pastel">
-    <div class="flex-1 md:pr-12">
-      <h2 class="text-3xl font-light text-dark mb-4 border-b-2 border-gold inline-block pb-1">About Studio 410</h2>
-      <p class="text-gray-600 mb-6">
-        Studio 410 is a creative beauty salon and photography studio in Fort Wayne, IN.<br>
-        We blend artistry and style to offer beauty treatments, professional photography, and inspiring spaces for your creative journey.
+    <!-- Top Right 1 -->
+    <div class="relative rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-900 dark:border dark:border-gray-700 dark:shadow-xl transition">
+      <img src="images/pexels-photo-13658923.jpeg" alt="Hair Styling Services" class="w-full h-72 object-cover"/>
+      <div class="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 to-transparent p-6">
+        <span class="text-white text-2xl md:text-3xl font-light font-serif leading-tight drop-shadow">
+          HAIR STYLING<br>SERVICES
+        </span>
+      </div>
+    </div>
+    <!-- Top Right 2 -->
+    <div class="relative rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-900 dark:border dark:border-gray-700 dark:shadow-xl transition">
+      <img src="images/pexels-photo-8418393.jpeg" alt="Cosmetic Services" class="w-full h-72 object-cover"/>
+      <div class="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 to-transparent p-6">
+        <span class="text-white text-2xl md:text-3xl font-light font-serif leading-tight drop-shadow">
+          COSMETIC<br>SERVICES
+        </span>
+      </div>
+    </div>
+    <!-- Bottom Right 1 -->
+    <div class="relative rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-900 dark:border dark:border-gray-700 dark:shadow-xl transition">
+      <img src="images/pexels-photo-3369163.webp" alt="Nail Services" class="w-full h-72 object-cover"/>
+      <div class="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 to-transparent p-6">
+        <span class="text-white text-2xl md:text-3xl font-light font-serif leading-tight drop-shadow">
+          NAIL<br>SERVICES
+        </span>
+      </div>
+    </div>
+    <!-- Bottom Right 2 -->
+    <div class="relative rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-900 dark:border dark:border-gray-700 dark:shadow-xl transition">
+      <img src="images/pexels-photo-8784732.webp" alt="Massage Services" class="w-full h-72 object-cover"/>
+      <div class="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 to-transparent p-6">
+        <span class="text-white text-2xl md:text-3xl font-light font-serif leading-tight drop-shadow">
+          MASSAGE<br>SERVICES
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Section (modern Nicepage-inspired) -->
+<section id="about" class="bg-white dark:bg-black py-20">
+  <div class="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center px-4 md:px-0">
+    <!-- Text Content -->
+    <div class="w-full md:w-1/2 md:pr-12 mt-10 md:mt-0">
+      <h2 class="text-5xl md:text-6xl font-extrabold text-dark dark:text-white mb-6 leading-tight">
+        About <span class="text-gold">Studio 410</span>
+      </h2>
+      <h3 class="text-2xl md:text-3xl text-gold font-bold mb-4">
+        Creative Beauty & Photography in Fort Wayne
+      </h3>
+      <p class="text-lg text-gray-700 dark:text-gray-200 mb-8">
+        Studio 410 is a modern beauty salon and creative photography studio located in Fort Wayne, IN.<br class="hidden md:block">
+        We blend artistry, style, and innovation to offer signature beauty treatments, professional photography, and inspiring studio spaces for your creative journey.
       </p>
-      <div class="flex space-x-8 mt-8">
-        <div>
-          <div class="text-3xl font-bold text-dark flex items-center">
-            <svg class="w-6 h-6 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-            5+
-          </div>
-          <div class="text-gray-500">Signature Services</div>
-        </div>
-        <div>
-          <div class="text-3xl font-bold text-dark flex items-center">
-            <svg class="w-6 h-6 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/></svg>
-            Modern
-          </div>
-          <div class="text-gray-500">Studio Space</div>
-        </div>
-      </div>
+      
     </div>
-    <div class="flex-1 flex justify-center mt-8 md:mt-0 relative">
-      <div class="absolute -top-8 -left-8 w-40 h-40 bg-accent rounded-full opacity-30 z-0"></div>
-      <img src="images/7d4ded030cdfc4796a7d81026d8b3b4f.jpg" alt="Studio 410 Interior" class="rounded-xl shadow-lg w-72 h-72 object-cover relative z-10"/>
+    <!-- Image -->
+    <div class="w-full md:w-1/2 flex justify-center md:justify-end">
+      <img src="images/7d4ded030cdfc4796a7d81026d8b3b4f.jpg" alt="Studio 410 Interior" class="rounded-3xl shadow-2xl w-full max-w-md object-cover"/>
     </div>
-  </section>
-  
+  </div>
+</section>
+
 <!-- Reviews Section -->
-<section class="bg-gray-50 py-16">
-  <h2 class="text-3xl font-bold text-center mb-10 text-dark">What Our Clients Say</h2>
+<section class="bg-gray-50 dark:bg-black py-16">
+  <h2 class="text-3xl font-bold text-center mb-10 text-dark dark:text-white">What Our Clients Say</h2>
   <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-    <div class="bg-white p-8 rounded-xl shadow flex flex-col items-center">
-      <img src="images/photo-1580998510397-f5643998fc69.jpeg" alt="Client 1" class="w-20 h-20 rounded-full mb-4 object-cover"/>
-      <p class="mb-4 text-gray-700 text-center">"Studio 410 made my wedding day unforgettable! The photos are stunning and the team was so supportive throughout. 😊✨"</p>
-      <span class="font-semibold text-dark">– Emily R.</span>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 p-8 rounded-xl shadow flex flex-col items-center transition">
+      <img src="images/pexels-photo-8418393.jpeg" alt="Client 1" class="w-20 h-20 rounded-full mb-4 object-cover border-4 border-gray-200 dark:border-gray-700"/>
+      <p class="mb-4 text-gray-700 dark:text-gray-300 text-center">"Studio 410 made my wedding day unforgettable! The photos are stunning and the team was so supportive throughout."</p>
+      <span class="font-semibold text-dark dark:text-white">– Emily R.</span>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow flex flex-col items-center">
-      <img src="images/2677889-face-portrait-smile-and-happy-asian-man-in-studio-isolated-on-a-gray-background-or-backdrop.-funny-beauty-and-young-confident-and-proud-handsome-male-model-from-singapore-smiling-joy-and-chee.jpg" alt="Client 2" class="w-20 h-20 rounded-full mb-4 object-cover"/>
-      <p class="mb-4 text-gray-700 text-center">"The creative space is inspiring and the staff is so friendly. I love coming here for my beauty sessions! 💖✨"</p>
-      <span class="font-semibold text-dark">– Michael T.</span>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 p-8 rounded-xl shadow flex flex-col items-center transition">
+      <img src="images/pexels-photo-13658923.jpeg" alt="Client 2" class="w-20 h-20 rounded-full mb-4 object-cover border-4 border-gray-200 dark:border-gray-700"/>
+      <p class="mb-4 text-gray-700 dark:text-gray-300 text-center">"The creative space is inspiring and the staff is so friendly. I love coming here for my beauty sessions!"</p>
+      <span class="font-semibold text-dark dark:text-white">– Michael T.</span>
     </div>
   </div>
 </section>
 
 <!-- Meet Our Team Section -->
-<section class="py-16 bg-pastel">
-  <h2 class="text-3xl font-bold text-center mb-10 text-dark">Meet Our Team</h2>
+<section class="py-16 bg-pastel dark:bg-black">
+  <h2 class="text-3xl font-bold text-center mb-10 text-dark dark:text-white">Meet Our Team</h2>
   <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-    <div class="text-center">
-      <img src="images/pexels-photo-3379933.webp" class="w-32 h-32 mx-auto rounded-full mb-4 shadow object-cover" alt="Samantha Lee"/>
-      <h3 class="font-semibold text-lg text-dark">Samantha Lee</h3>
-      <span class="text-gray-500">Lead Photographer</span>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-2xl shadow-lg dark:shadow-xl p-8 text-center transition">
+      <img src="images/pexels-photo-3379933.webp" class="w-32 h-32 mx-auto rounded-full mb-4 shadow object-cover border-4 border-gray-200 dark:border-gray-700" alt="Samantha Lee"/>
+      <h3 class="font-semibold text-lg text-dark dark:text-white">Samantha Lee</h3>
+      <span class="text-gray-500 dark:text-gray-300">Lead Photographer</span>
     </div>
-    <div class="text-center">
-      <img src="images/images.jpeg" class="w-32 h-32 mx-auto rounded-full mb-4 shadow object-cover" alt="Jordan Smith"/>
-      <h3 class="font-semibold text-lg text-dark">Jordan Smith</h3>
-      <span class="text-gray-500">Creative Director</span>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-2xl shadow-lg dark:shadow-xl p-8 text-center transition">
+      <img src="images/pexels-photo-3369163.webp" class="w-32 h-32 mx-auto rounded-full mb-4 shadow object-cover border-4 border-gray-200 dark:border-gray-700" alt="Jordan Smith"/>
+      <h3 class="font-semibold text-lg text-dark dark:text-white">Jordan Smith</h3>
+      <span class="text-gray-500 dark:text-gray-300">Creative Director</span>
     </div>
-    <div class="text-center">
-      <img src="images/makeup-artist-2.webp" class="w-32 h-32 mx-auto rounded-full mb-4 shadow object-cover" alt="Ava Patel"/>
-      <h3 class="font-semibold text-lg text-dark">Ava Patel</h3>
-      <span class="text-gray-500">Salon Specialist</span>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-2xl shadow-lg dark:shadow-xl p-8 text-center transition">
+      <img src="images/pexels-photo-8784732.webp" class="w-32 h-32 mx-auto rounded-full mb-4 shadow object-cover border-4 border-gray-200 dark:border-gray-700" alt="Ava Patel"/>
+      <h3 class="font-semibold text-lg text-dark dark:text-white">Ava Patel</h3>
+      <span class="text-gray-500 dark:text-gray-300">Salon Specialist</span>
     </div>
   </div>
 </section>
 
 <!-- Pricing Table Section -->
-<section class="py-16">
-  <h2 class="text-3xl font-bold text-center mb-10 text-dark">Our Pricing</h2>
+<section class="py-16 bg-white dark:bg-black">
+  <h2 class="text-3xl font-bold text-center mb-10 text-dark dark:text-white">Our Pricing</h2>
   <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-8">
-    <div class="bg-white p-8 rounded-xl shadow text-center">
-      <h3 class="font-semibold text-lg mb-2 text-dark">Basic Session</h3>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 p-8 rounded-xl shadow text-center transition">
+      <h3 class="font-semibold text-lg mb-2 text-dark dark:text-white">Basic Session</h3>
       <div class="text-2xl font-bold mb-2 text-gold">$99</div>
-      <p class="text-gray-600">Includes 1 hour session and 10 edited photos.</p>
+      <p class="text-gray-600 dark:text-gray-300">Includes 1 hour session and 10 edited photos.</p>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow text-center">
-      <h3 class="font-semibold text-lg mb-2 text-dark">Salon Makeover</h3>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 p-8 rounded-xl shadow text-center transition">
+      <h3 class="font-semibold text-lg mb-2 text-dark dark:text-white">Salon Makeover</h3>
       <div class="text-2xl font-bold mb-2 text-gold">$150</div>
-      <p class="text-gray-600">Hair, nails, and beauty consultation.</p>
+      <p class="text-gray-600 dark:text-gray-300">Hair, nails, and beauty consultation.</p>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow text-center">
-      <h3 class="font-semibold text-lg mb-2 text-dark">Wedding Package</h3>
+    <div class="bg-white dark:bg-gray-900 dark:border dark:border-gray-700 p-8 rounded-xl shadow text-center transition">
+      <h3 class="font-semibold text-lg mb-2 text-dark dark:text-white">Wedding Package</h3>
       <div class="text-2xl font-bold mb-2 text-gold">$799</div>
-      <p class="text-gray-600">Full-day coverage and album included.</p>
+      <p class="text-gray-600 dark:text-gray-300">Full-day coverage and album included.</p>
     </div>
   </div>
 </section>
 
-<!-- Call To Action (CTA) Banner -->
-<section class="py-16 bg-gold text-center">
-    <h2 class="text-4xl md:text-5xl font-extrabold text-dark mb-6 leading-tight drop-shadow">
-      Ready to Book Your <span class="text-white bg-dark px-2 py-1 rounded">Studio 410</span> Experience?
-    </h2>
-    <p class="text-xl md:text-2xl text-dark mb-8 font-medium">
-      Don’t wait—secure your spot with our talented team today!
-    </p>
-    <a href="#contact" class="inline-block bg-white text-dark text-xl md:text-2xl px-10 py-4 rounded-full font-bold shadow-lg hover:bg-dark hover:text-white transition duration-200">
-      Book Now
-    </a>
-  </section>
+<div class="relative bg-cover bg-center" style="background-image: url('images/istockphoto-924985612-612x612.jpg');">
+    <!-- Overlay for readability -->
+    <div class="absolute inset-0 bg-black/40 dark:bg-black/70"></div>
+    <div class="relative z-10">
+      <!-- CTA Section -->
+      <section class="py-16 text-center text-white">
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow">
+          Ready to Book Your <span class="bg-dark px-2 py-1 rounded">Studio 410</span> Experience?
+        </h2>
+        <p class="text-xl md:text-2xl mb-8 font-medium">
+          Don’t wait—secure your spot with our talented team today!
+        </p>
+        <a href="#contact" class="inline-block bg-white dark:bg-black text-dark dark:text-white text-xl md:text-2xl px-10 py-4 rounded-full font-bold shadow-lg hover:bg-gold hover:text-black dark:hover:bg-gold dark:hover:text-white transition duration-200">
+          Book Now
+        </a>
+      </section>
+  
+      <!-- Contact Section -->
+      <section id="contact" class="py-16 px-4 max-w-3xl mx-auto text-center text-white">
+        <h3 class="text-2xl font-bold mb-6">Contact Studio 410</h3>
+        <p class="text-lg mb-4">Fort Wayne, IN</p>
+        <p class="text-lg font-semibold mb-4">
+          Phone: <a href="tel:+12604445363" class="text-gold hover:underline">+1 260-444-5363</a>
+        </p>
+        <p class="text-lg font-semibold mb-4">
+          Email: <a href="mailto:randomnumbers@yahoo.com" class="text-gold hover:underline">randomnumbers@yahoo.com</a>
+        </p>
+        <div class="flex justify-center space-x-6 mt-4">
+          <a href="https://www.instagram.com/bluehost/#" class="hover:text-gold text-2xl" aria-label="Instagram" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://www.facebook.com/bluehost" class="hover:text-gold text-2xl" aria-label="Facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
+        </div>
+      </section>
+    </div>
+  </div>
   
 
-<!-- Contact Section -->
-<section id="contact" class="py-16 px-4 max-w-3xl mx-auto text-center">
-  <h3 class="text-2xl font-bold text-dark mb-6">Contact Studio 410</h3>
-  <p class="text-lg text-gray-800 mb-4">Fort Wayne, IN</p>
-  <p class="text-lg text-gray-900 font-semibold mb-4">Phone: <a href="tel:+12604445363" class="text-gold hover:underline">+1 260-444-5363</a></p>
-  <p class="text-lg text-gray-900 font-semibold mb-4">Email: <a href="mailto:randomnumbers@yahoo.com" class="text-gold hover:underline">randomnumbers@yahoo.com</a></p>
-  <div class="flex justify-center space-x-6 mt-4">
-    <a href="https://www.instagram.com/bluehost/#" class="text-dark hover:text-gold text-2xl" aria-label="Instagram" target="_blank" rel="noopener noreferrer">Instagram</a>
-    <a href="https://www.facebook.com/bluehost" class="text-dark hover:text-gold text-2xl" aria-label="Facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
-  </div>
-</section>
 
 <!-- Footer -->
-<footer class="bg-white text-center text-gray-500 py-6">
+<footer class="bg-white dark:bg-black text-center text-gray-500 dark:text-white py-6">
   &copy; 2025 Studio 410, Fort Wayne. All rights reserved.
 </footer>
 </body>
 </html>
+
+
+
+
+
 
 
 
